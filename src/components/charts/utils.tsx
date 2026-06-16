@@ -7,7 +7,6 @@ export function defaultXLabelFormatter(
   value: number | string | Date,
   idx: number
 ) {
-  console.log(idx)
   if (value instanceof Date) {
     return value.toLocaleDateString("en-US", {
       month: "short",

@@ -171,7 +171,6 @@ export async function chatCompletionWrapper({
 }: ChatCompletionWrapperProps): Promise<LLMResponse> {
   try {
     const prompt = createPrompt({ instructions, data, widgets, messages })
-    console.log(prompt)
 
     const { output: object } = await generateText({
       model: getModel(),
@@ -180,7 +179,6 @@ export async function chatCompletionWrapper({
       temperature: 0.7,
     })
 
-    console.log("LLM response:", JSON.stringify(object))
     return object as LLMResponse
   } catch (error) {
     console.error("Error processing message:", error)

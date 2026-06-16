@@ -211,8 +211,6 @@ export function Chat<T>({
     [widgetsMap, messages]
   )
 
-  console.log("messages", messages)
-
   return (
     <div className="flex flex-col h-full">
       <ScrollArea className="flex-1 p-2">

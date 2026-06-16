@@ -43,8 +43,6 @@ interface FinancialTableProps {
 }
 
 export function FinancialTable({ title, data, footer }: FinancialTableProps) {
-  console.log("financial table data", data)
-
   const showQuarterlyChange = data.some(
     (item) => item.quarterlyChange !== undefined
   )
