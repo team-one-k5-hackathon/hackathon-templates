@@ -1,0 +1,77 @@
+{
+  "Sidebar": {
+    "application": "Application",
+    "deprecated": "Deprecated",
+    "help": "Help",
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "demo": "Demo",
+    "components_demo": "Components",
+    "charts": "Charts",
+    "tables": "Tables",
+    "utilities": "Utilities",
+    "chat": "Chat",
+    "settings": "Settings",
+    "docs": "Docs",
+    "support": "Support",
+    "feedback": "Feedback"
+  },
+  "Home": {
+    "title": "Home"
+  },
+  "Dashboard": {
+    "title": "Quarterly Report - Dashboard",
+    "description": "Automated Dashboard generation based on DATEV BWA Exports",
+    "choose-file": "Choose file",
+    "no-file-chosen": "No file chosen",
+    "upload-file": "Upload Excel File"
+  },
+  "Feedback": {
+    "title": "Feedback",
+    "description": "Help us improve by sharing your thoughts.",
+    "form": {
+      "title": "Share your feedback",
+      "description": "Your input helps us build a better product.",
+      "rating": "Overall rating",
+      "category": "Category",
+      "category_placeholder": "Select a category",
+      "categories": {
+        "general": "General",
+        "bug": "Bug Report",
+        "feature": "Feature Request",
+        "ux": "UX / Design",
+        "performance": "Performance"
+      },
+      "message": "Message",
+      "message_placeholder": "Tell us what you think...",
+      "name": "Name (optional)",
+      "name_placeholder": "Your name",
+      "email": "Email (optional)",
+      "email_placeholder": "your@email.com",
+      "submit": "Send feedback",
+      "sending": "Sending..."
+    },
+    "success": {
+      "title": "Thank you!",
+      "description": "Your feedback has been received. We appreciate you taking the time.",
+      "again": "Submit more feedback"
+    },
+    "error": {
+      "required": "Please write a message before submitting.",
+      "rating": "Please select a rating.",
+      "send": "Something went wrong. Please try again."
+    }
+  },
+  "Settings": {
+    "title": "Settings",
+    "general": {
+      "title": "General Settings",
+      "description": "Manage your application preferences and settings",
+      "demo": {
+        "title": "Demo Mode",
+        "description": "Enable demo features for testing and presentation purposes",
+        "save": "Save changes"
+      }
+    }
+  }
+}

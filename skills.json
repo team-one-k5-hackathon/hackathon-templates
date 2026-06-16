@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft/2020-12/schema",
+  "$id": "./claude/skills/schema.json",
+  "agent": "claude-code",
+  "collections": [
+    "anthropics/skills",
+    "clerk/skills"
+  ],
+  "skills": {
+    "find-skills": "vercel-labs/skills",
+    "frontend-design": "anthropics/skills",
+    "skill-creator": "anthropics/skills"
+  }
+}

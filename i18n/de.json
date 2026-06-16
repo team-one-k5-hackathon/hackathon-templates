@@ -1,0 +1,77 @@
+{
+  "Sidebar": {
+    "application": "Anwendung",
+    "deprecated": "Deprecated",
+    "help": "Hilfe",
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "demo": "Demo",
+    "components_demo": "Komponenten",
+    "charts": "Charts",
+    "tables": "Tabellen",
+    "utilities": "Hilfsmittel",
+    "chat": "Chat",
+    "settings": "Einstellungen",
+    "docs": "Dokumentation",
+    "support": "Support",
+    "feedback": "Feedback"
+  },
+  "Home": {
+    "title": "Home"
+  },
+  "Dashboard": {
+    "title": "Quartalsbericht - Dashboard",
+    "description": "Automatisierte Dashboard-herstellung anhand von DATEV BWA Auszüge",
+    "choose-file": "Wähle Files aus",
+    "no-file-chosen": "Kein File ausgewählt",
+    "upload-file": "Lade Excel File hoch"
+  },
+  "Feedback": {
+    "title": "Feedback",
+    "description": "Hilf uns zu verbessern, indem du deine Gedanken teilst.",
+    "form": {
+      "title": "Feedback teilen",
+      "description": "Dein Beitrag hilft uns, ein besseres Produkt zu entwickeln.",
+      "rating": "Gesamtbewertung",
+      "category": "Kategorie",
+      "category_placeholder": "Kategorie auswählen",
+      "categories": {
+        "general": "Allgemein",
+        "bug": "Fehler melden",
+        "feature": "Funktionswunsch",
+        "ux": "UX / Design",
+        "performance": "Performance"
+      },
+      "message": "Nachricht",
+      "message_placeholder": "Was denkst du...",
+      "name": "Name (optional)",
+      "name_placeholder": "Dein Name",
+      "email": "E-Mail (optional)",
+      "email_placeholder": "deine@email.com",
+      "submit": "Feedback senden",
+      "sending": "Wird gesendet..."
+    },
+    "success": {
+      "title": "Vielen Dank!",
+      "description": "Dein Feedback ist bei uns eingegangen. Wir schätzen deine Zeit.",
+      "again": "Weiteres Feedback senden"
+    },
+    "error": {
+      "required": "Bitte schreibe eine Nachricht, bevor du absendest.",
+      "rating": "Bitte wähle eine Bewertung.",
+      "send": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    }
+  },
+  "Settings": {
+    "title": "Einstellungen",
+    "general": {
+      "title": "Allgemeine Einstellungen",
+      "description": "Verwalte die Einstellungen der Anwendung",
+      "demo": {
+        "title": "Vorstellung-Mode",
+        "description": "Schalte Vorstellungsmode ein zum testen und zum präsentieren",
+        "save": "Änderungen speichern"
+      }
+    }
+  }
+}

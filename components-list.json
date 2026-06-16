@@ -1,0 +1,29 @@
+[
+  {
+    "name": "shadcn",
+    "url": "https://ui.shadcn.com/r/styles/new-york",
+    "components": [
+      "alert",
+      "button",
+      "card",
+      "chart",
+      "input",
+      "label",
+      "resizable",
+      "scroll-area",
+      "separator",
+      "sheet",
+      "sidebar",
+      "skeleton",
+      "switch",
+      "table",
+      "toast",
+      "tooltip"
+    ]
+  },
+  {
+    "name": "localhost",
+    "url": "http://localhost:3000/r",
+    "components": []
+  }
+]

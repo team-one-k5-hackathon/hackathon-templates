@@ -1,0 +1,22 @@
+# IDEs
+.idea
+.vscode
+
+# Packages
+node_modules
+
+# Builds
+.next
+
+# Local
+local
+*.local
+*.local.*
+
+# Secrets
+*.secret
+*.secret.*
+
+
+# clerk configuration (can include secrets)
+/.clerk/

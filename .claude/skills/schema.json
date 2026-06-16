@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sassalboventures.com/schemas/spm.json",
+  "title": "Skills Manager Configuration",
+  "description": "Configuration for skills installation with roles and skills",
+  "type": "object",
+  "properties": {
+    "agent": {
+      "type": "string",
+      "description": "The format/type of the tool",
+      "enum": ["claude-code"]
+    },
+    "collections": {
+      "type": "array",
+      "description": "List of skills repositories to install",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "roles": {
+      "type": "object",
+      "description": "Map of role names to their semver version constraints",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^(\\^|~|>=|<=|>|<|=)?\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.-]+)?(\\+[a-zA-Z0-9.-]+)?$",
+        "description": "Semver version range (e.g., ^1.0.0, ~2.1.0, >=1.0.0)"
+      }
+    },
+    "skills": {
+      "type": "object",
+      "description": "Map of skill names to their semver version constraints",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^(\\^|~|>=|<=|>|<|=)?\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.-]+)?(\\+[a-zA-Z0-9.-]+)?$",
+        "description": "Semver version range (e.g., ^1.0.0, ~2.1.0, >=1.0.0)"
+      }
+    }
+  },
+  "required": ["agent", "skills"],
+  "additionalProperties": false
+}

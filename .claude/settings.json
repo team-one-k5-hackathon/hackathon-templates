@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.youtube.com)"
+    ],
+    "deny": [
+      "Read(./vault/**)",
+      "Read(**/vault/**)",
+      "Edit(./vault/**)",
+      "Edit(**/vault/**)",
+      "Write(./vault/**)",
+      "Write(**/vault/**)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "excludedCommands": [
+      "docker *",
+      "rm *"
+    ],
+    "filesystem": {
+      "allowWrite": [
+        "~/.claude/skills",
+        "/tmp/build",
+        "~/.kube"
+      ],
+      "denyWrite": [
+        "./.claude/settings.json",
+        "./.claude/settings.local.json"
+      ],
+      "denyRead": [
+        "~/.aws/credentials",
+        "~/.config/gws/credentials.enc"
+      ]
+    }
+  }
+}
