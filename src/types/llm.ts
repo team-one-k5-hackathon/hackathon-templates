@@ -19,7 +19,7 @@ export interface LLMProps {
 }
 
 interface LLMWidgetProps {
-  llm?: LLMProps
+  llm: LLMProps
 }
 
 export type IWidget<P> = React.FC<P> & LLMWidgetProps

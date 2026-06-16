@@ -7,8 +7,9 @@ import React, { useEffect, useMemo, useRef, useState } from "react"
 
 import { AnimatePresence } from "framer-motion"
 import { Send } from "lucide-react"
+import { useTranslations } from "next-intl"
 
-import type { IWidget, LLMProps } from "@/types/llm"
+import type { IWidget } from "@/types/llm"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
@@ -38,7 +39,7 @@ interface ChatProps<T> {
   }: {
     messages: Message[]
     data: T | null
-    widgets?: LLMProps[]
+    widgets?: IWidget<any>[]
   }) => Promise<LLMResponse>
   onMessageCallback?: ({ messages }: { messages: Message[] }) => void
 }
@@ -66,6 +67,7 @@ export function Chat<T>({
   processMessages,
   onMessageCallback,
 }: ChatProps<T>) {
+  const t = useTranslations("Chat")
   const [messages, setMessages] = useState<Message[]>([])
   const [inputText, setInputText] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -131,7 +133,7 @@ export function Chat<T>({
       const response = await processMessages({
         messages: updatedMessages,
         data: data,
-        widgets: allWidgets.map((widget) => widget.llm) as LLMProps[],
+        widgets: allWidgets,
       })
 
       // Add assistant response
@@ -151,9 +153,7 @@ export function Chat<T>({
         },
         {
           isUser: false,
-          content: simpleText(
-            "Entschuldigung, es gab einen Fehler bei der Verarbeitung deiner Anfrage."
-          ),
+          content: simpleText(t("error")),
         },
       ] as Message[]
       setMessages(errorMessages)
@@ -228,7 +228,7 @@ export function Chat<T>({
           <Textarea
             ref={textareaRef}
             className="min-h-[38px] flex-1 overflow-hidden resize-none max-h-[200px]"
-            placeholder="Wie kann ich Ihnen helfen?"
+            placeholder={t("placeholder")}
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyPress}

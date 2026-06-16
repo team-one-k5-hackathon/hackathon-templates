@@ -12,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
+import { useLocale } from "next-intl"
 
 import type { IWidget } from "@/types/llm"
 import { formatNumber } from "@/lib/format"
@@ -42,9 +43,16 @@ interface AreaChartProps {
 }
 
 function AreaChart(props: AreaChartProps) {
-  const { data, xAxis, yAxis, lineType = "natural", aspectRatio = 2 } = props
+  const { data = [], xAxis = { key: "" }, yAxis = { key: "" }, lineType = "natural", aspectRatio = 2 } = props
   const { key: xKey, formatter: xFormatter = defaultXLabelFormatter } = xAxis
   const { key: yKey, label: yLabel } = yAxis
+  const locale = useLocale()
+
+  // Normalize LLM-generated { x, y } format to { [xKey]: x, [yKey]: y }
+  const normalizedData = React.useMemo(() => {
+    if (!data.length || !("x" in data[0])) return data
+    return data.map((d: any) => ({ [xKey]: d.x, [yKey]: d.y }))
+  }, [data, xKey, yKey])
 
   // Settings
   const chartConfig: ChartConfig = {
@@ -58,7 +66,7 @@ function AreaChart(props: AreaChartProps) {
     <ChartContainer config={chartConfig} style={{ aspectRatio }}>
       <RechartsAreaChart
         accessibilityLayer
-        data={data}
+        data={normalizedData}
         margin={{
           left: 12,
           right: 12,
@@ -79,7 +87,7 @@ function AreaChart(props: AreaChartProps) {
         />
         <YAxis
           className="text-sm fill-muted-foreground"
-          tickFormatter={(tick) => formatNumber(tick, 0)}
+          tickFormatter={(tick) => formatNumber(tick, 0, locale)}
           tickLine={false}
           axisLine={false}
         />
@@ -147,16 +155,22 @@ AreaChartCard.llm = {
         },
         data: {
           type: "array",
+          minItems: 1,
+          description: "Must contain at least one data point.",
           items: {
             type: "object",
+            required: ["x", "y"],
             description:
-              "An array of data points where each key represents a data attribute.",
-            additionalProperties: {
-              oneOf: [
-                { type: "number" },
-                { type: "string" },
-                { type: "string", format: "date-time" },
-              ],
+              "A data point. 'x' is the x-axis value (e.g. month name, year, date string). 'y' is the numeric y-axis value.",
+            properties: {
+              x: {
+                type: "string",
+                description: "The x-axis label (e.g. 'Jan', '2023', 'Q1')",
+              },
+              y: {
+                type: "number",
+                description: "The numeric y-axis value",
+              },
             },
           },
         },
@@ -210,27 +224,12 @@ AreaChartCard.llm = {
     title: "Revenue",
     description: "Over last 3 years",
     data: [
-      {
-        date: "2021",
-        value: -255131,
-      },
-      {
-        date: "2022",
-        value: -69402,
-      },
-      {
-        date: "2023",
-        value: -258996,
-      },
+      { x: "2021", y: -255131 },
+      { x: "2022", y: -69402 },
+      { x: "2023", y: -258996 },
     ],
-    xAxis: {
-      key: "date",
-      label: "Year",
-    },
-    yAxis: {
-      key: "value",
-      label: "Revenue",
-    },
+    xAxis: { key: "date", label: "Year" },
+    yAxis: { key: "value", label: "Revenue" },
     lineType: "natural",
   },
 }

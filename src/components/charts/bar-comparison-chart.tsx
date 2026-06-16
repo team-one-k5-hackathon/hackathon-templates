@@ -6,6 +6,7 @@
 import React from "react"
 
 import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts"
+import { useLocale } from "next-intl"
 
 import type { IWidget } from "@/types/llm"
 import { formatNumber } from "@/lib/format"
@@ -61,10 +62,24 @@ const transformArrayToObject = (arr: { key: string; label: string }[]) => {
 
 const BarComparisonChart: IWidget<BarComparisonChartProps> = ({
   title,
-  data,
-  labels,
+  data = [],
+  labels = [],
   footer,
 }) => {
+  const locale = useLocale()
+
+  // Normalize LLM-generated { category, values[] } format to { category, [key]: value }
+  const normalizedData = React.useMemo(() => {
+    if (!data.length || !("values" in data[0])) return data
+    return data.map((d: any) => {
+      const result: ComparisonData = { category: d.category }
+      labels.forEach((label, i) => {
+        result[label.key] = d.values?.[i] ?? 0
+      })
+      return result
+    })
+  }, [data, labels])
+
   const colors = [
     "hsl(var(--chart-1))",
     "hsl(var(--chart-2))",
@@ -86,7 +101,7 @@ const BarComparisonChart: IWidget<BarComparisonChartProps> = ({
         <ChartContainer config={updatedConfigs}>
           <BarChart
             accessibilityLayer
-            data={data}
+            data={normalizedData}
             margin={{ top: 6, right: 6, left: 12, bottom: 6 }}
           >
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -98,7 +113,7 @@ const BarComparisonChart: IWidget<BarComparisonChartProps> = ({
             />
             <YAxis
               className="text-sm fill-muted-foreground"
-              tickFormatter={(tick) => formatNumber(tick, 0)}
+              tickFormatter={(tick) => formatNumber(tick, 0, locale)}
               tickLine={false}
               axisLine={false}
             />
@@ -106,7 +121,7 @@ const BarComparisonChart: IWidget<BarComparisonChartProps> = ({
               formatter={(value, payload) => {
                 const foundLabel = labels.find((label) => label.key === payload)
                 return [
-                  formatNumber(value as number),
+                  formatNumber(value as number, 0, locale),
                   foundLabel ? foundLabel.label : payload,
                 ]
               }}
@@ -147,21 +162,30 @@ BarComparisonChart.llm = {
         },
         data: {
           type: "array",
+          minItems: 1,
+          description: "Must contain at least one data point.",
           items: {
             type: "object",
+            required: ["category", "values"],
             description:
-              "An array of data points where each key represents a data attribute. The key 'category' is always required and represents the labels to show under each of the bars",
-            additionalProperties: {
-              oneOf: [
-                { type: "number" },
-                { type: "string" },
-                { type: "string", format: "date-time" },
-              ],
+              "A data point. 'category' is the bar group label. 'values' contains one numeric value per series, in the same order as the 'labels' array.",
+            properties: {
+              category: {
+                type: "string",
+                description: "The label shown under the bar group (e.g. 'October', 'Electronics')",
+              },
+              values: {
+                type: "array",
+                description: "Numeric values, one per entry in the 'labels' array, in the same order",
+                items: { type: "number" },
+              },
             },
           },
         },
         labels: {
           type: "array",
+          minItems: 1,
+          description: "Must contain at least one label entry.",
           items: {
             type: "object",
             description:
@@ -187,25 +211,11 @@ BarComparisonChart.llm = {
     title: "Revenue",
     description: "Over last 3 years",
     data: [
-      {
-        category: "2021",
-        value: 1234,
-      },
-      {
-        category: "2022",
-        value: 3456,
-      },
-      {
-        category: "2023",
-        value: 3456,
-      },
+      { category: "2021", values: [1234] },
+      { category: "2022", values: [3456] },
+      { category: "2023", values: [3456] },
     ],
-    labels: [
-      {
-        key: "value",
-        label: "Revenue",
-      },
-    ],
+    labels: [{ key: "value", label: "Revenue" }],
   },
 }
 

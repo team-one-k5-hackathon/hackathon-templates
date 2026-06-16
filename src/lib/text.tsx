@@ -4,7 +4,8 @@
 import React, { JSX } from "react"
 import Link from "next/link"
 
-export function parseTextWithLinks(text: string) {
+export function parseTextWithLinks(text: string | undefined) {
+  if (!text) return []
   const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g
   const urlRegex = /(https?:\/\/[^\s]+)/g
 

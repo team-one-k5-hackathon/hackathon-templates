@@ -62,6 +62,10 @@
       "send": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
     }
   },
+  "Chat": {
+    "placeholder": "Wie kann ich Ihnen helfen?",
+    "error": "Entschuldigung, es gab einen Fehler bei der Verarbeitung deiner Anfrage."
+  },
   "Settings": {
     "title": "Einstellungen",
     "general": {

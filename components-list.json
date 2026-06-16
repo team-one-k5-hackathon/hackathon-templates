@@ -4,9 +4,11 @@
     "url": "https://ui.shadcn.com/r/styles/new-york",
     "components": [
       "alert",
+      "badge",
       "button",
       "card",
       "chart",
+      "checkbox",
       "input",
       "label",
       "resizable",

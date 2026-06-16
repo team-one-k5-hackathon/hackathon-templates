@@ -62,6 +62,10 @@
       "send": "Something went wrong. Please try again."
     }
   },
+  "Chat": {
+    "placeholder": "How can I help you?",
+    "error": "Sorry, there was an error processing your request."
+  },
   "Settings": {
     "title": "Settings",
     "general": {

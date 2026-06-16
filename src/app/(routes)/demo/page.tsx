@@ -254,7 +254,13 @@ export default function Page() {
           <Chat<string>
             data={CHAT_DATA}
             widgets={[AreaChartCard, BarComparisonChart]}
-            processMessages={chatCompletion}
+            processMessages={({ messages, data, widgets }) =>
+              chatCompletion({
+                messages,
+                data,
+                widgets: widgets?.map((w) => w.llm!).filter(Boolean),
+              })
+            }
           />
         </div>
       </ResizablePanel>

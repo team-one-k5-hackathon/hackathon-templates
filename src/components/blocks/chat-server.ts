@@ -3,20 +3,41 @@
 
 "use server"
 
-import { AzureOpenAI } from "openai"
-import { z } from "zod"
+import { createAnthropic } from "@ai-sdk/anthropic"
+import { createGoogleGenerativeAI } from "@ai-sdk/google"
+import { createOpenAI } from "@ai-sdk/openai"
+import { generateText, jsonSchema, Output, type LanguageModel } from "ai"
 
 import { LLMProps } from "@/types/llm"
-import { extractSchemaStructure } from "@/types/schema"
-
 import type { LLMResponse, Message } from "./chat"
 
-const azureOpenai = new AzureOpenAI({
-  endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
-  apiKey: process.env.AZURE_OPENAI_API_KEY!,
-  apiVersion: process.env.AZURE_OPENAI_API_VERSION!,
-  deployment: "gpt-4o",
-})
+function getModel(): LanguageModel {
+  const provider = process.env.AI_PROVIDER ?? "azure"
+
+  switch (provider) {
+    case "azure": {
+      const azure = createOpenAI({
+        baseURL: `${process.env.AZURE_OPENAI_ENDPOINT?.replace(/\/$/, "")}/openai/v1/`,
+        apiKey: process.env.AZURE_OPENAI_API_KEY!,
+      })
+      return azure(process.env.AZURE_OPENAI_DEPLOYMENT ?? "gpt-4o-mini")
+    }
+    case "openai": {
+      const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY! })
+      return openai(process.env.AI_MODEL ?? "gpt-5.4-mini")
+    }
+    case "anthropic": {
+      const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+      return anthropic(process.env.AI_MODEL ?? "claude-haiku-4-5-20251001")
+    }
+    case "google": {
+      const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY! })
+      return google(process.env.AI_MODEL ?? "gemini-3.1-flash-lite")
+    }
+    default:
+      throw new Error(`Unknown AI_PROVIDER: "${provider}". Use azure, openai, anthropic, or google.`)
+  }
+}
 
 export interface ChatCompletionWrapperProps {
   instructions: string
@@ -32,20 +53,30 @@ interface PromptProps {
   widgets?: LLMProps[]
 }
 
-const ChatResponseZod = z.object({
-  response: z
-    .array(
-      z.object({
-        type: z.string().describe("The name of the widget to use"),
-        props: z
-          .record(z.any())
-          .describe("The properties to be passed into the widget"),
-      })
-    )
-    .describe(
-      "The array can contain 1 or multiple elements, as many as need to respond to the user request"
-    ),
-})
+function buildResponseSchema(widgets: LLMProps[]) {
+  const itemSchemas = widgets.map((widget) => ({
+    type: "object" as const,
+    properties: {
+      type: { type: "string" as const, enum: [widget.functionCall.name] },
+      props: widget.functionCall.parameters,
+    },
+    required: ["type", "props"],
+  }))
+
+  return jsonSchema<LLMResponse>({
+    type: "object",
+    properties: {
+      response: {
+        type: "array",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        items: { anyOf: itemSchemas } as any,
+        minItems: 1,
+        description: "One or more response elements. Always populate this array — never return it empty.",
+      },
+    },
+    required: ["response"],
+  })
+}
 
 const CHAT_RESPONSE_EXAMPLE = {
   response: [
@@ -61,24 +92,13 @@ const CHAT_RESPONSE_EXAMPLE = {
         title: "Chart title",
         description: "Chart short description or key value to highlight",
         data: [
-          {
-            date: 2021,
-            value: 1234.12,
-          },
-          {
-            date: 2022,
-            value: 134.5,
-          },
+          { x: "2021", y: 1234.12 },
+          { x: "2022", y: 134.5 },
         ],
-        xAxis: {
-          key: "date",
-          label: "Year",
-        },
-        yAxis: {
-          key: "value",
-          label: "Visitors",
-        },
+        xAxis: { key: "date", label: "Year" },
+        yAxis: { key: "value", label: "Visitors" },
         lineType: "natural",
+        aspectRatio: "4",
       },
     },
     {
@@ -91,9 +111,8 @@ const CHAT_RESPONSE_EXAMPLE = {
 }
 
 function createPrompt({ instructions, data, widgets, messages }: PromptProps) {
-  // Process messages history
   const history = messages
-    ? JSON.stringify(messages.slice(0, -1), null, 2)
+    ? JSON.stringify(messages.slice(0, -1), null)
     : "No messages provided"
   const message = messages
     ? JSON.stringify(messages?.at(-1)?.content)
@@ -101,34 +120,26 @@ function createPrompt({ instructions, data, widgets, messages }: PromptProps) {
 
   return `
 ----------------
+CURRENT DATE & TIME
+
+${new Date().toISOString()}
+
+----------------
+TASK
+
+Answer the user's question by populating the "response" array with one or more items.
+Each item must have a "type" matching one of the available widgets below, and "props" matching that widget's schema.
+Always include at least one item — never return an empty response array.
+
+----------------
 INSTRUCTIONS
 
 ${instructions ?? "No instructions provided"}
 
 ----------------
-WIDGETS
+AVAILABLE WIDGETS
 
-*******
-Available Widgets
-
-Find a list of widgets that can be used to display information, each widget is defined according to function_call schema from OpenAI.
-To display widget data, respond with an entry in the JSON response object containing the widget name and the function call arguments.
-
-${widgets ? JSON.stringify(widgets?.map((widget) => widget.functionCall)) : "No widgets provided"}
-
-*******
-Widgets Usage Example
-
-Here an example of how the widget can be rendered by returning widget props in the JSON response
-
-${
-  widgets && widgets[0]?.example
-    ? JSON.stringify({
-        type: widgets[0].functionCall.name,
-        props: widgets[0].example,
-      })
-    : "No example provided"
-}
+${widgets ? JSON.stringify(widgets.map((widget) => widget.functionCall)) : "No widgets provided"}
 
 ----------------
 CHAT HISTORY
@@ -143,22 +154,12 @@ ${data ?? "No data provided"}
 ----------------
 USER QUESTION
 
-${message ?? "No user question provided"}
+${message ?? "No user message provided"}
 
 ----------------
-JSON STRUCTURE
+EXAMPLE OUTPUT (follow this structure)
 
-${JSON.stringify(extractSchemaStructure(ChatResponseZod))}
-
-----------------
-EXAMPLE OUTPUT
-    
-${JSON.stringify(CHAT_RESPONSE_EXAMPLE) ?? "No example provided"}
-
-----------------
-IMPORTANT
-    
-Return only the JSON structure with no additional explanation. Ensure the response is a valid JSON object without any markdown formatting or code blocks.
+${JSON.stringify(CHAT_RESPONSE_EXAMPLE)}
 `
 }
 
@@ -169,53 +170,25 @@ export async function chatCompletionWrapper({
   widgets,
 }: ChatCompletionWrapperProps): Promise<LLMResponse> {
   try {
-    // Prompt
-    const prompt = createPrompt({
-      instructions: instructions,
-      data: data,
-      widgets: widgets,
-      messages: messages,
-    })
+    const prompt = createPrompt({ instructions, data, widgets, messages })
     console.log(prompt)
 
-    // Prompt
-    const completion = await azureOpenai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+    const { output: object } = await generateText({
+      model: getModel(),
+      output: Output.object({ schema: buildResponseSchema(widgets ?? []) }),
+      messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
     })
 
-    const content = completion.choices[0].message?.content
-
-    if (!content) {
-      return {
-        response: [
-          {
-            type: "text",
-            props: {
-              value:
-                "Entschuldigung, ich konnte keine passende Antwort generieren.",
-            },
-          },
-        ],
-      }
-    }
-    return JSON.parse(content)
+    console.log("LLM response:", JSON.stringify(object))
+    return object as LLMResponse
   } catch (error) {
     console.error("Error processing message:", error)
     return {
       response: [
         {
           type: "text",
-          props: {
-            value:
-              "Es tut mir leid, es gab einen Fehler bei der Verarbeitung deiner Anfrage.",
-          },
+          props: { text: "Sorry, there was an error processing your request." },
         },
       ],
     }

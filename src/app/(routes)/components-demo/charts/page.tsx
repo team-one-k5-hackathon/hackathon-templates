@@ -52,7 +52,12 @@ export default function ChartsDemoPage() {
           yAxis={{ key: "revenue", label: "Revenue (€)" }}
           aspectRatio={2}
         />
-        <LineTrendChart title="Growth Index" data={LINE_DATA} yAxisLabel="%" />
+        <LineTrendChart
+          title="Growth Index"
+          data={LINE_DATA}
+          xAxis={{ key: "date" }}
+          yAxis={{ key: "value", label: "%" }}
+        />
       </div>
 
       <BarComparisonChart
