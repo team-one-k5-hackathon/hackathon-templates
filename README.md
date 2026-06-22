@@ -81,3 +81,30 @@ npm run format:write   # Prettier
 ## Demo
 
 The `/demo` route shows a full example — KPI cards, tabbed charts, and an AI side-chat that can answer questions and render charts inline based on the page data.
+
+
+## Claude Code
+
+**Settings**
+
+- `claude --worktree`: Initialize Claude with worktrees, so that multiple goals can be worked on in parallel
+
+   - Can also be used as `claude -w -name <feature>` to name parallel sessions
+
+- `Shift+Tab`: go into `auto` mode
+- `/sandbox`: Enable sandbox for the Claude session
+- `/fewer-permission-prompts`: Scan transcript and add permissions to `.claude/settings.json`
+- `claude --add-dir <dir>`: to give Claude access to another directory
+
+
+**Useful commands**
+
+- `/init`: Initializes Claude for the project
+
+- `/goal <goal>`: Specify the goal the Claude checks before stopping
+- `/loop 5m <prompt>`: Tell Claude to run in a loop until goal specified in /goal is achieved
+- `/schedule`: Same as loop, but hosted in cloud, works with laptop closed
+- `/rewind`: Revert changes that may have introduced errors
+- `/compact`: Compress the context to save on tokens
+- `/btw`: "by-the-way" to send side questions without interrupting Claude
+- `/agents`: See which agents you have available and which ones are currently running
