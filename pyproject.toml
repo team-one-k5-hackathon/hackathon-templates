@@ -1,0 +1,13 @@
+[project]
+name = "k5_hackathon"
+version = "1.0.0"
+description = "K5 Hack-AI-thon 2026"
+authors = [
+  {name = "Matteo Berchier", email = "matteo@sassalboventures.com"},
+]
+readme = "README.md"
+requires-python = ">=3.13,<3.15"
+dependencies = [
+  "litellm[proxy]==1.89.3",
+  "prisma"
+]

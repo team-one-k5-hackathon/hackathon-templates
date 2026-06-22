@@ -108,3 +108,12 @@ The `/demo` route shows a full example — KPI cards, tabbed charts, and an AI s
 - `/compact`: Compress the context to save on tokens
 - `/btw`: "by-the-way" to send side questions without interrupting Claude
 - `/agents`: See which agents you have available and which ones are currently running
+
+**Open-Source Models**
+
+Claude Code can be used with Open-Source Models through a proxy like `litellm`. 
+Anthropic provides a guide on how to set it up [here](https://code.claude.com/docs/en/llm-gateway)
+
+The main steps to set it up are:
+
+1. 

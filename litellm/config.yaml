@@ -1,0 +1,36 @@
+# NOTE
+#
+# Model names are mapped to the ANTHROPIC environment variables, so that
+# Claude Code uses those models instead of Opus, Sonnet and Haiku. The
+# environment variables to set the model names defined in model_list
+# are:
+#   - ANTHROPIC_MODEL: Default model
+#   - ANTHROPIC_DEFAULT_OPUS_MODEL
+#   - ANTHROPIC_DEFAULT_SONNET_MODEL
+#   - ANTHROPIC_DEFAULT_HAIKU_MODEL
+
+model_list:
+  # OpenAI
+  - model_name: openai-main
+    litellm_params:
+      model: openai/gpt-5
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: openai-fast
+    litellm_params:
+      model: openai/gpt-5-mini
+      api_key: os.environ/OPENAI_API_KEY
+  # Gemini
+  - model_name: gemini-main
+    litellm_params:
+      model: gemini/gemini-3.1-pro-preview
+      api_key: os.environ/GOOGLE_GENERATIVE_AI_API_KEY
+  - model_name: gemini-fast
+    litellm_params:
+      model: gemini/gemini-3.5-flash
+      api_key: os.environ/GOOGLE_GENERATIVE_AI_API_KEY
+
+litellm_settings:
+  # NOTE: Gemini rejects unknown params Claude Code sends
+  drop_params: true
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
